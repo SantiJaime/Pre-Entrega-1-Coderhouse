@@ -1,4 +1,68 @@
-// Esta función se utiliza en los 3 ejercicios. Por favor no comentarla
+const OPTIONS = [
+  "0) Salir",
+  "1) Comprar productos",
+  "2) Ver carrito",
+  "3) Modificar carrito",
+  "4) Eliminar producto del carrito",
+];
+const PRODUCTS = [
+  {
+    nombre: "Coca-Cola 3L",
+    precio: 3800,
+    cantidad: 0,
+  },
+  {
+    nombre: "Yerba mate 1 Kg",
+    precio: 1800,
+    cantidad: 0,
+  },
+  {
+    nombre: "Chocolate Cofler",
+    precio: 1500,
+    cantidad: 0,
+  },
+  {
+    nombre: "Jamón cocido",
+    precio: 2700,
+    cantidad: 0,
+  },
+  {
+    nombre: "Jabón de tocador 1 u",
+    precio: 800,
+    cantidad: 0,
+  },
+  {
+    nombre: "Papel higiénico - Pack x4",
+    precio: 1850,
+    cantidad: 0,
+  },
+  {
+    nombre: "Lavandina 2 L",
+    precio: 2400,
+    cantidad: 0,
+  },
+  {
+    nombre: "Aceite de oliva 500 cc",
+    precio: 10000,
+    cantidad: 0,
+  },
+  {
+    nombre: "Lata de atún al natural 170 g",
+    precio: 3750,
+    cantidad: 0,
+  },
+];
+
+let cart = [];
+
+class Product {
+  constructor(nombre, precio, cantidad) {
+    this.nombre = nombre;
+    this.precio = precio;
+    this.cantidad = cantidad;
+  }
+}
+
 const isNumber = (number) => {
   while (isNaN(number)) {
     number = parseInt(
@@ -8,142 +72,195 @@ const isNumber = (number) => {
   return number;
 };
 
-// Algoritmo con condicional
-
-let numeroEsPar = isNumber(
-  parseInt(prompt("Ingrese un número para determinar si es par o impar"))
-);
-
-if (numeroEsPar % 2 === 0) console.log(`${numeroEsPar} es par`);
-else console.log(`${numeroEsPar} es impar`);
-
-// Algoritmo con condicional y ciclos
-
-/* let notaMayor = 0;
-let alumnoMayorNota = 0;
-
-let cantNotas = isNumber(
-  parseInt(prompt("Ingrese la cantidad de alumnos para ingresar sus notas"))
-);
-
-console.group("Alumnos y sus notas:");
-for (let i = 0; i < cantNotas; i++) {
-  let nota = isNumber(
-    parseInt(prompt(`Ingrese la nota del alumno ${i} (Entre 1 y 10)`))
-  );
-  while (nota < 1 || nota > 10) {
-    nota = isNumber(
+const isNotZero = (cantidad) => {
+  while (cantidad === 0) {
+    cantidad = isNumber(
       parseInt(
         prompt(
-          `Ha ingresado un valor inválido. Ingrese nuevamente la nota del alumno ${i}`
+          "Ha ingresado una cantidad nula. Debe ingresar un valor mayor a 0"
         )
       )
     );
   }
-  if (nota > notaMayor) {
-    notaMayor = nota;
-    alumnoMayorNota = i;
-  }
-
-  console.log(`Alumno ${i} - Nota: ${nota}`);
-}
-console.groupEnd();
-console.log(
-  `El alumno ${alumnoMayorNota} obtuvo la mayor nota de ${notaMayor}`
-); */
-
-// Simulador interactivo
-
-/* let option;
-let cantTotalProductos = 0,
-  subtotal = 0,
-  precioFinal = 0;
-
-const calcularPrecio = (precioUnitario, nombreProducto) => {
-  let cantProd = isNumber(
-    parseInt(prompt(`Ingrese la cantidad de ${nombreProducto} a comprar`))
-  );
-  let precioCantidad = precioUnitario * cantProd;
-
-  cantTotalProductos += cantProd;
-  subtotal += precioCantidad;
-
-  return precioCantidad;
+  return cantidad;
 };
 
-console.group("Lista de productos y sus precios finales");
-do {
-  option = parseInt(
-    prompt(
-      "Bienvenido al minimercado. ¿Qué desea comprar?\n0) Finalizar compra\n1) Coca-Cola 3L ($3800 c/u)\n2) Yerba Mate ($1800 c/u)\n3) Manzana roja ($2800 x Kg)\n4) Chocolate Cofler ($1500 c/u)\n5) Papel higienico ($1850 c/ pack de 4 unidades)\n6) Lavandina 2L ($1400 c/u)\n7) Aceite de oliva 500cc ($10000 c/u)\n8) Jabón de tocador ($800 c/u) "
+const addProdInCart = () => {
+  do {
+    let prodOption = isNumber(
+      parseInt(
+        prompt(
+          `¿Qué producto desea agregar a su carrito?\n${PRODUCTS.map(
+            (prod, index) => `${index}) ${prod.nombre} | $${prod.precio} c/u`
+          ).join("\n")}`
+        )
+      )
+    );
+    if (prodOption > PRODUCTS.length - 1) {
+      alert(
+        "El producto seleccionado no existe en el mercado. Inténtelo de nuevo"
+      );
+      continue;
+    }
+
+    let cantProd = isNumber(
+      isNotZero(
+        parseInt(
+          prompt(
+            `Ingrese la cantidad de ${PRODUCTS[prodOption].nombre} que desea llevar`
+          )
+        )
+      )
+    );
+
+    let prod = new Product(
+      PRODUCTS[prodOption].nombre,
+      PRODUCTS[prodOption].precio,
+      cantProd
+    );
+    let prodExistIndex = cart.findIndex(
+      (cartProd) => cartProd.nombre === prod.nombre
+    );
+
+    if (prodExistIndex >= 0) {
+      cart[prodExistIndex].cantidad += cantProd;
+      return;
+    }
+    cart.push(prod);
+  } while (confirm("¿Desea seguir agregando productos al carrito?"));
+};
+
+const showCart = () => {
+  if (cart.length > 0) {
+    console.group("Su carrito de compras hasta ahora:");
+    cart.forEach((prod) =>
+      console.log(
+        `${prod.nombre} | Cantidad: ${prod.cantidad} | Precio total: $${
+          prod.precio * prod.cantidad
+        }`
+      )
+    );
+    console.groupEnd();
+  } else console.log("Aún no agregó productos a su carrito");
+};
+
+const editCart = () => {
+  if (cart.length === 0) {
+    alert("Aún no agregó productos a su carrito");
+    return;
+  }
+  do {
+    let prodOption = isNumber(
+      parseInt(
+        prompt(
+          `¿De qué producto desea editar la cantidad de su carrito?\n${cart
+            .map(
+              (prod, index) =>
+                `${index}) ${prod.nombre} | Cantidad: ${prod.cantidad} unidades`
+            )
+            .join("\n")}`
+        )
+      )
+    );
+    if (prodOption > cart.length - 1) {
+      alert(
+        "El producto seleccionado no existe en el carrito. Inténtelo de nuevo"
+      );
+      continue;
+    }
+    let nombreProd = cart[prodOption].nombre;
+
+    let cantProd = isNumber(
+      isNotZero(
+        parseInt(
+          prompt(
+            `Ingrese la cantidad de ${cart[prodOption].nombre} que desea llevar`
+          )
+        )
+      )
+    );
+
+    cart.forEach((prod) => {
+      if (prod.nombre === nombreProd) prod.cantidad = cantProd;
+    });
+  } while (confirm("¿Desea seguir modificando productos en su carrito?"));
+};
+
+const deleteProdFromCart = () => {
+  if (cart.length === 0) {
+    alert("Aún no agregó productos a su carrito");
+    return;
+  }
+
+  let prodOption = isNumber(
+    parseInt(
+      prompt(
+        `¿Qué producto desea eliminar de su carrito?\n${cart
+          .map(
+            (prod, index) =>
+              `${index}) ${prod.nombre} | Cantidad: ${prod.cantidad} unidades`
+          )
+          .join("\n")}`
+      )
     )
   );
-  switch (option) {
-    case 0:
-      break;
+  let prodNombre = cart[prodOption].nombre;
+  cart = cart.filter((prod) => prod.nombre !== prodNombre);
+  alert(`El producto ${prodNombre} ha sido borrado de su carrito`);
+};
+
+do {
+  let chosenOption = parseInt(
+    prompt(
+      `Bienvenido al minimercado. ¿Qué desea hacer? \n${OPTIONS.join("\n")}`
+    )
+  );
+  switch (chosenOption) {
     case 1:
-      console.log(`Coca-Cola 3L: $${calcularPrecio(3800, "Coca-Cola 3L")}`);
+      addProdInCart();
       break;
     case 2:
-      console.log(`Yerba Mate: $${calcularPrecio(1800, "Yerba Mate")}`);
+      showCart();
       break;
     case 3:
-      console.log(`Manzana roja: $${calcularPrecio(2800, "Manzana roja")}`);
+      editCart();
       break;
     case 4:
-      console.log(
-        `Chocolate Cofler: $${calcularPrecio(1500, "Chocolate Cofler")}`
-      );
-      break;
-    case 5:
-      console.log(
-        `Papel higienico: $${calcularPrecio(1850, "Papel higienico")}`
-      );
-      break;
-    case 6:
-      console.log(`Lavandina 2L: $${calcularPrecio(1400, "Lavandina 2L")}`);
-      break;
-    case 7:
-      console.log(
-        ` Aceite de oliva 500cc: $${calcularPrecio(
-          10000,
-          " Aceite de oliva 500cc"
-        )}`
-      );
-      break;
-    case 8:
-      console.log(
-        `Jabón de tocador: $${calcularPrecio(800, "Jabón de tocador")}`
-      );
+      deleteProdFromCart();
       break;
     default:
       alert("Opción inválida. Inténtelo de nuevo");
       break;
   }
-} while (option !== 0);
-if (cantTotalProductos === 0)
-  console.log("No colocaste ningún producto en tu carrito");
+} while (confirm("¿Desea realizar otra acción?"));
+
+if (cart.length === 0) {
+  console.log("No realizó compras. ¡Que tenga un buen día!");
+}
+
+alert("Si lleva al menos 30 productos, se le aplica un descuento del 10%");
+let cantTotalProductos = cart.reduce((total, prod) => total + prod.cantidad, 0);
+let subtotal = cart.reduce(
+  (total, prod) => total + prod.cantidad * prod.precio,
+  0
+);
+
+let precioFinal;
+if (cantTotalProductos >= 30) precioFinal = subtotal - subtotal * 0.1;
+else precioFinal = subtotal;
+
+console.group("Ticket - Minimercado");
+console.log(`Cantidad total de productos: ${cantTotalProductos}`);
+
+cart.forEach((prod) =>
+  console.log(
+    `${prod.nombre} | Cantidad: ${prod.cantidad} | Precio total: ${
+      prod.cantidad * prod.precio
+    }`
+  )
+);
+
+console.log("----------------------");
+console.log(`Subtotal $${subtotal}`);
+console.log(`Precio final: $${precioFinal}`);
 console.groupEnd();
-
-if (cantTotalProductos > 0) {
-  let opcionPagar = isNumber(
-    parseInt(
-      prompt(
-        `Ingrese como desea pagar:\n1) Pago único (0% interés)\n2) 3 pagos (15% de interés)\n3) 6 pagos (35% de interés)`
-      )
-    )
-  );
-  if (opcionPagar === 1) precioFinal = subtotal;
-  else if (opcionPagar === 2) precioFinal = subtotal + subtotal * 0.15;
-  else if (opcionPagar === 3) precioFinal = subtotal + subtotal * 0.35;
-  alert("Al llevar al menos 10 productos, se le aplicará un descuento del 10%");
-  console.group("Ticket");
-  console.log(`Cantidad total de productos: ${cantTotalProductos}`);
-  console.log(`Subtotal: $${subtotal}`);
-  console.log(`Método de pago: ${opcionPagar} pago(s)`);
-  if (cantTotalProductos >= 10) precioFinal = precioFinal - precioFinal * 0.1;
-
-  console.log(`Precio final: $${precioFinal}`);
-
-  console.groupEnd();
-} */
