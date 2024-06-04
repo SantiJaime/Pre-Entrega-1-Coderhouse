@@ -102,7 +102,7 @@ const showCart = () => {
     headers.forEach((headerText) => {
       const th = document.createElement("th");
       th.scope = "col";
-      th.textContent = headerText;
+      th.innerText = headerText;
       headerRow.appendChild(th);
     });
 
@@ -117,15 +117,15 @@ const showCart = () => {
 
       const th = document.createElement("th");
       th.scope = "row";
-      th.textContent = prod.id;
+      th.innerText = prod.id;
       tr.appendChild(th);
 
       const tdName = document.createElement("td");
-      tdName.textContent = prod.nombre;
+      tdName.innerText = prod.nombre;
       tr.appendChild(tdName);
 
       const tdPrice = document.createElement("td");
-      tdPrice.textContent = `$${prod.precio}`;
+      tdPrice.innerText = `$${prod.precio}`;
       tr.appendChild(tdPrice);
 
       const tdQuantity = document.createElement("td");
@@ -140,7 +140,7 @@ const showCart = () => {
 
       const h6Quantity = document.createElement("h6");
       h6Quantity.id = prod.id;
-      h6Quantity.textContent = prod.cantidad;
+      h6Quantity.innerText = prod.cantidad;
 
       const btnIncrease = document.createElement("button");
       btnIncrease.className = "btn btn-outline-success p-1 increase-btn";
@@ -164,7 +164,7 @@ const showCart = () => {
 
       const tdTotalPrice = document.createElement("td");
       tdTotalPrice.id = `precioTotal${prod.id}`;
-      tdTotalPrice.textContent = `$${prod.cantidad * prod.precio}`;
+      tdTotalPrice.innerText = `$${prod.cantidad * prod.precio}`;
       tr.appendChild(tdTotalPrice);
 
       tbody.appendChild(tr);
